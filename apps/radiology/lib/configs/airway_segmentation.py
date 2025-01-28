@@ -56,7 +56,7 @@ class AirwaySegmentation(TaskConfig):
 
         self.target_spacing = (1, 1, 1)  # target space for image
         # Setting ROI size - This is for the image padding
-        self.roi_size = (16, 128, 128)
+        self.roi_size = (128, 128, 16)
 
         # Network
         self.network = UNet(

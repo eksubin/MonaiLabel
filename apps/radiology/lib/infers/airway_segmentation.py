@@ -22,6 +22,8 @@ from monai.transforms import (
     ScaleIntensityd,
     ScaleIntensityRanged,
     Spacingd,
+    Lambdad,
+    Transposed
 )
 
 from monailabel.interfaces.tasks.infer_v2 import InferType
@@ -57,11 +59,13 @@ class AirwaySegmentation(BasicInferTask):
         )
         self.target_spacing = target_spacing
 
+
+
     def pre_transforms(self, data=None) -> Sequence[Callable]:
         t = [
             LoadImaged(keys=["image"],
                 reader="NrrdReader", image_only=True),
-        #Transposed(keys=['image'], indices=[2, 1, 0]),
+        #Transposed(keys=['image'], indices=[2, 1, 0]), Cant use this it have issues with monai label
         EnsureChannelFirstd(keys=["image"]),
         ScaleIntensityRanged(
             keys=["image"],
@@ -78,20 +82,24 @@ class AirwaySegmentation(BasicInferTask):
         return SlidingWindowInferer(
             roi_size=self.roi_size,
             sw_batch_size=2,
-            overlap=0.4,
-            padding_mode="replicate",
-            mode="gaussian",
         )
 
     def inverse_transforms(self, data=None):
         return []
 
+    def binarize(self, label, threshold=-10):
+        print("###################### label shape",label.shape)
+        binary_mask = (label < threshold)
+        binary_mask[binary_mask > 0] = 1  # Set all non-zero pixels to 1
+        return binary_mask
+
     def post_transforms(self, data=None) -> Sequence[Callable]:
         t = [
             EnsureTyped(keys="pred", device=data.get("device") if data else None),
-            Activationsd(keys="pred", softmax=True),
-            AsDiscreted(keys="pred", argmax=True),
+            # Activationsd(keys="pred", softmax=True),
+            # AsDiscreted(keys="pred", argmax=True),
             #KeepLargestConnectedComponentd(keys="pred"),
+            Lambdad(("pred"), self.binarize),
             Restored(keys="pred", ref_image="image"),
         ]
         return t
