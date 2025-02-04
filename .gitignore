@@ -1,3 +1,10 @@
 data
 datasets
 apps/radiology/model/
+apps/radiology/__pycache__/
+apps/radiology/lib/__pycache__/
+apps/radiology/lib/activelearning/__pycache__/
+apps/radiology/lib/configs/__pycache__/
+apps/radiology/lib/infers/__pycache__/
+apps/radiology/lib/trainers/__pycache__/
+apps/radiology/lib/transforms/__pycache__/
