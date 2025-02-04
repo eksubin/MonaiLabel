@@ -8,3 +8,4 @@ apps/radiology/lib/configs/__pycache__/
 apps/radiology/lib/infers/__pycache__/
 apps/radiology/lib/trainers/__pycache__/
 apps/radiology/lib/transforms/__pycache__/
+apps/radiology/logs/
